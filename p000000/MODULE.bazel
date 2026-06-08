@@ -1,0 +1,37 @@
+module(name = "bitmask")
+
+# bazel_dep(name = "llvm", version = "0.8.6")
+# local_path_override(
+#     module_name = "llvm",
+#     path = "hermetic-llvm/",
+# )
+bazel_dep(name = "googletest", version = "1.17.0")
+bazel_dep(name = "rules_cc", version = "0.2.19")
+
+############################################################################
+# configure llvm toolchain
+############################################################################
+# toolchain = use_extension("@llvm//extensions:toolchain.bzl", "toolchain")
+
+# llvm_source = use_extension("@llvm//extensions:llvm_source.bzl", "llvm_source")
+# llvm_source.version(llvm_version = "23.0.0")
+
+# toolchain.exec(
+#     arch = "x86_64",
+#     os = "linux",
+# )
+# toolchain.exec(
+#     arch = "aarch64",
+#     os = "linux",
+# )
+# toolchain.target(
+#     arch = "x86_64",
+#     os = "linux",
+# )
+# toolchain.target(
+#     arch = "aarch64",
+#     os = "linux",
+# )
+# use_repo(toolchain, "llvm_toolchains")
+
+# register_toolchains("@llvm_toolchains//:all")

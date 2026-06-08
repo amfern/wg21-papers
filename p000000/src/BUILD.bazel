@@ -1,0 +1,16 @@
+cc_library(
+    name = "bitmask_operators",
+    hdrs = [
+        "bitmask_operators.hpp",
+        "p3394.hpp",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+cc_binary(
+    name = "bitmask_operators_example",
+    srcs = ["main.cpp"],
+    deps = [":bitmask_operators"],
+    visibility = ["//visibility:public"],
+)
+
