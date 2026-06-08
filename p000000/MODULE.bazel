@@ -24,11 +24,11 @@ gcc_toolchains = use_extension("@gcc_toolchain//toolchain:module_extensions.bzl"
             ],
         ),
         use_repo(gcc_toolchains, "gcc_toolchain_{}".format(arch)),
-        # register_toolchains(
-        #     "@gcc_toolchain_{}//:cc_toolchain".format(arch),
-        #     "@gcc_toolchain_{}//:fortran_toolchain".format(arch),
-        #     dev_dependency = True,
-        # ),
+        register_toolchains(
+            "@gcc_toolchain_{}//:cc_toolchain".format(arch),
+            "@gcc_toolchain_{}//:fortran_toolchain".format(arch),
+            dev_dependency = True,
+        ),
     ]
     for arch in [
         "aarch64",
@@ -66,8 +66,8 @@ toolchain.target(
 )
 use_repo(toolchain, "llvm_toolchains")
 
-# register_toolchains("@llvm_toolchains//:all")
+register_toolchains("@llvm_toolchains//:all")
 
 
 
-# register_execution_platforms("//platforms:clang_p2996")
+register_execution_platforms("//platforms:clang_p2996")

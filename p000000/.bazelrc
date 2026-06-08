@@ -11,7 +11,8 @@ build:llvm --config=hermetic
 build:llvm --extra_toolchains=@llvm_toolchains//:all
 build:llvm --cxxopt -freflection
 build:llvm --cxxopt -std=c++26
-  
+
+build:llvm_docker_p2996 --action_env=BAZEL_DO_NOT_DETECT_CPP_TOOLCHAIN=0
 build:llvm_docker_p2996 --repo_env=LD_LIBRARY_PATH=/opt/p2996/clang/lib:/opt/p2996/clang/lib/x86_64-unknown-linux-gnu
 build:llvm_docker_p2996 --repo_env=CC=/opt/p2996/clang/bin/clang
 build:llvm_docker_p2996 --repo_env=CXX=/opt/p2996/clang/bin/clang++
@@ -20,31 +21,17 @@ build:llvm_docker_p2996 --spawn_strategy=docker
 build:llvm_docker_p2996 --spawn_strategy=docker
 build:llvm_docker_p2996 --experimental_enable_docker_sandbox
 build:llvm_docker_p2996 --experimental_docker_image=vsavkov/clang-p2996:amd64
-build:docker-sandbox --spawn_strategy=docker --strategy=Javac=docker --genrule_strategy=docker
-# build:docker-sandbox --host_javabase=<...>
-# build:docker-sandbox --javabase=<...>
-# build:docker-sandbox --crosstool_top=<...>
-# build:llvm_docker_p2996 --strategy=CcCompile=docker --strategy=CppLink=docker
-build:docker-sandbox --experimental_docker_verbose
-
-
+build:llvm_docker_p2996 --spawn_strategy=docker --strategy=Javac=docker --genrule_strategy=docker
+build:llvm_docker_p2996 --strategy=CcCompile=docker --strategy=CppLink=docker
+# build:llvm_docker_p2996 --host_javabase=<...>
+# build:llvm_docker_p2996 --javabase=<...>
+# build:llvm_docker_p2996 --crosstool_top=<...>
+build:llvm_docker_p2996 --experimental_docker_verbose
 build:llvm_docker_p2996 --cxxopt -freflection-latest
 build:llvm_docker_p2996 --cxxopt -std=c++26
 
 build:gcc --config=hermetic
 build:gcc --extra_toolchains=@gcc_toolchain_x86_64//:cc_toolchain
-
-# consider addig new toolchain that uses container
-# platform(
-#     name = "rbe_container_platform",
-#     constraint_values = [
-#         "@platforms//os:linux",
-#         "@platforms//cpu:x86_64",
-#     ],
-#     exec_properties = {
-#         "container-image": "docker://gcr.io/your-project/your-toolchain-image@sha256:YOUR_IMAGE_SHA256",
-#     },
-# )
 
 # Avoid building all targets when testing
 test --build_tests_only
