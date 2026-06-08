@@ -1,6 +1,5 @@
 load("@rules_cc//cc:defs.bzl", "cc_test")
 
-
 cc_test(
     name = "test_bitmask_operators",
     srcs = ["test_bitmask_operators.cpp"],

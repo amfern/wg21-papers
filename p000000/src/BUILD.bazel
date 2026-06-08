@@ -1,9 +1,14 @@
+load("@bazel_lib//lib:transitions.bzl", "platform_transition_filegroup")
+load("@bazel_skylib//rules:build_test.bzl", "build_test")
+load("@rules_cc//cc:defs.bzl", "cc_library", "cc_binary")
+
 cc_library(
     name = "bitmask_operators",
     hdrs = [
         "bitmask_operators.hpp",
         "p3394.hpp",
     ],
+    linkopts = ["-lstdc++"],
     visibility = ["//visibility:public"],
 )
 
@@ -13,4 +18,3 @@ cc_binary(
     deps = [":bitmask_operators"],
     visibility = ["//visibility:public"],
 )
-

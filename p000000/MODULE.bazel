@@ -1,37 +1,73 @@
 module(name = "bitmask")
 
-# bazel_dep(name = "llvm", version = "0.8.6")
-# local_path_override(
-#     module_name = "llvm",
-#     path = "hermetic-llvm/",
-# )
 bazel_dep(name = "googletest", version = "1.17.0")
+bazel_dep(name = "bazel_skylib", version = "1.8.1")
+bazel_dep(name = "bazel_lib", version = "3.0.0")
+bazel_dep(name = "platforms", version = "1.0.0")
 bazel_dep(name = "rules_cc", version = "0.2.19")
+
+############################################################################
+# configure gcc toolchain
+############################################################################
+bazel_dep(name = "gcc_toolchain", version = "0.10.0")
+
+gcc_toolchains = use_extension("@gcc_toolchain//toolchain:module_extensions.bzl", "gcc_toolchains", dev_dependency = True)
+
+[
+    [
+        gcc_toolchains.toolchain(
+            name = "gcc_toolchain_{}".format(arch),
+            target_arch = arch,
+            extra_cxxflags = [
+                "-std=c++26",
+                "-freflection",
+            ],
+        ),
+        use_repo(gcc_toolchains, "gcc_toolchain_{}".format(arch)),
+        # register_toolchains(
+        #     "@gcc_toolchain_{}//:cc_toolchain".format(arch),
+        #     "@gcc_toolchain_{}//:fortran_toolchain".format(arch),
+        #     dev_dependency = True,
+        # ),
+    ]
+    for arch in [
+        "aarch64",
+        "armv7",
+        "x86_64",
+    ]
+]
+
 
 ############################################################################
 # configure llvm toolchain
 ############################################################################
-# toolchain = use_extension("@llvm//extensions:toolchain.bzl", "toolchain")
+bazel_dep(name = "llvm", version = "0.8.6")
 
-# llvm_source = use_extension("@llvm//extensions:llvm_source.bzl", "llvm_source")
+toolchain = use_extension("@llvm//extensions:toolchain.bzl", "toolchain")
+
+llvm_source = use_extension("@llvm//extensions:llvm_source.bzl", "llvm_source")
 # llvm_source.version(llvm_version = "23.0.0")
 
-# toolchain.exec(
-#     arch = "x86_64",
-#     os = "linux",
-# )
-# toolchain.exec(
-#     arch = "aarch64",
-#     os = "linux",
-# )
-# toolchain.target(
-#     arch = "x86_64",
-#     os = "linux",
-# )
-# toolchain.target(
-#     arch = "aarch64",
-#     os = "linux",
-# )
-# use_repo(toolchain, "llvm_toolchains")
+toolchain.exec(
+    arch = "x86_64",
+    os = "linux",
+)
+toolchain.exec(
+    arch = "aarch64",
+    os = "linux",
+)
+toolchain.target(
+    arch = "x86_64",
+    os = "linux",
+)
+toolchain.target(
+    arch = "aarch64",
+    os = "linux",
+)
+use_repo(toolchain, "llvm_toolchains")
 
 # register_toolchains("@llvm_toolchains//:all")
+
+
+
+# register_execution_platforms("//platforms:clang_p2996")

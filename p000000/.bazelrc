@@ -1,20 +1,41 @@
 # Use the toolchain-resolution mechanism for C++
-build --incompatible_enable_cc_toolchain_resolution
-
-# Prevent `PATH` and `LD_LIBRARY_PATH` leaking into action enviroment
-# build --incompatible_strict_action_env
-
-# Prevent symlink forest under `.runfiles/wsname/external/repo`
-# build --nolegacy_external_runfiles
+build:hermetic --incompatible_enable_cc_toolchain_resolution
+build:hermetic --action_env=BAZEL_DO_NOT_DETECT_CPP_TOOLCHAIN=1
+build:hermetic --incompatible_strict_action_env=true
 
 # fail on warnning
 build --copt=-Werror
 build --linkopt=-Werror
 
-# enable reflection
-build --cxxopt -freflection-latest
-build --cxxopt -std=c++26
+build:llvm --config=hermetic
+build:llvm --extra_toolchains=@llvm_toolchains//:all
+build:llvm --cxxopt -freflection
+build:llvm --cxxopt -std=c++26
+  
+build:llvm_docker_p2996 --repo_env=LD_LIBRARY_PATH=/opt/p2996/clang/lib:/opt/p2996/clang/lib/x86_64-unknown-linux-gnu
+build:llvm_docker_p2996 --repo_env=CC=/opt/p2996/clang/bin/clang
+build:llvm_docker_p2996 --repo_env=CXX=/opt/p2996/clang/bin/clang++
+build:llvm_docker_p2996 --repo_env=PATH=/opt/p2996/clang/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/sbin:/bin
+build:llvm_docker_p2996 --spawn_strategy=docker
+build:llvm_docker_p2996 --experimental_enable_docker_sandbox=true
+build:llvm_docker_p2996 --experimental_docker_image=vsavkov/clang-p2996:amd64
+build:llvm_docker_p2996 --cxxopt -freflection-latest
+build:llvm_docker_p2996 --cxxopt -std=c++26
+
+build:gcc --config=hermetic
+build:gcc --extra_toolchains=@gcc_toolchain_x86_64//:cc_toolchain
+
+# consider addig new toolchain that uses container
+# platform(
+#     name = "rbe_container_platform",
+#     constraint_values = [
+#         "@platforms//os:linux",
+#         "@platforms//cpu:x86_64",
+#     ],
+#     exec_properties = {
+#         "container-image": "docker://gcr.io/your-project/your-toolchain-image@sha256:YOUR_IMAGE_SHA256",
+#     },
+# )
 
 # Avoid building all targets when testing
 test --build_tests_only
-# test --test_env=LD_LIBRARY_PATH=/opt/p2996/clang/lib

@@ -3,7 +3,7 @@
 
 #include <type_traits>
 #include <utility>
-#include <experimental/meta>
+#include <meta>
 
 // https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2025/p3394r4.html
 namespace std::meta {
@@ -24,7 +24,7 @@ template<typename R>
 consteval auto expand(R range) {
   std::vector<std::meta::info> args;
   for (auto r : range) {
-    args.push_back(std::meta::reflect_value(r));
+    args.push_back(std::meta::reflect_constant(r));
   }
   return substitute(^^__impl::replicator, args);
 }
