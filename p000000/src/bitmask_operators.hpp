@@ -68,13 +68,10 @@
 
 #include "src/p3394.hpp"
 
-template <auto V> struct Derive { };
-template <auto V> inline constexpr Derive<V> derive;
-
-inline constexpr struct{} Bitmask;
+inline constexpr struct Bitmask{} bitmask;
 
 template<typename T>
-concept BitmaskLike = std::is_enum_v<T> and std::meta::has_annotation(^^T, derive<Bitmask>);
+concept BitmaskLike = std::is_enum_v<T> and std::meta::has_annotation(^^T, bitmask);
 
 template<BitmaskLike T>
 constexpr auto
