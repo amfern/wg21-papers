@@ -13,7 +13,7 @@ cc_library(
 )
 
 cc_binary(
-    name = "bitmask_operators_example",
+    name = "example",
     srcs = ["main.cpp"],
     deps = [":bitmask_operators"],
     visibility = ["//visibility:public"],

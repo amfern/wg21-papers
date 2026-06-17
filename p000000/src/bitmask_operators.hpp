@@ -68,12 +68,14 @@
 
 #include "src/p3394.hpp"
 
-inline constexpr struct Bitmask{} bitmask;
+inline constexpr struct BitmaskType{} bitmask_type;
 
 template<typename T>
-concept BitmaskLike = std::is_enum_v<T> and std::meta::has_annotation(^^T, bitmask);
+concept BitmaskTypeLike = std::is_enum_v<T> and (std::meta::has_annotation(^^T, bitmask_type) or requires(T e) {
+  enable_bitmask_type(e);
+});
 
-template<BitmaskLike T>
+template<BitmaskTypeLike T>
 constexpr auto
 operator|(const T lhs, const T rhs)
 {
@@ -81,7 +83,7 @@ operator|(const T lhs, const T rhs)
                         std::to_underlying(rhs));
 }
 
-template<typename T>
+template<BitmaskTypeLike T>
 constexpr auto
 operator&(const T lhs, const T rhs)
 {
@@ -89,7 +91,7 @@ operator&(const T lhs, const T rhs)
                         std::to_underlying(rhs));
 }
 
-template<typename T> 
+template<BitmaskTypeLike T>
 constexpr auto
 operator^(const T lhs, const T rhs)
 {
@@ -98,7 +100,7 @@ operator^(const T lhs, const T rhs)
 }
 
 
-template<typename T>
+template<BitmaskTypeLike T>
 constexpr auto
 operator~(const T lhs)
 {
@@ -106,7 +108,7 @@ operator~(const T lhs)
 }
 
 
-template<typename T>
+template<BitmaskTypeLike T>
 constexpr auto
 operator|=(const T &lhs, const T rhs)
 {
@@ -115,10 +117,8 @@ operator|=(const T &lhs, const T rhs)
   return lhs;
 }
 
-template<typename T>
-requires(std::is_enum_v<T>and requires(T e) {
-  enable_bitmask_operators(e);
-}) constexpr auto
+template<BitmaskTypeLike T>
+constexpr auto
 operator&=(const T &lhs, const T rhs)
 {
   lhs = static_cast<T>(std::to_underlying(lhs) &
@@ -126,8 +126,7 @@ operator&=(const T &lhs, const T rhs)
   return lhs;
 }
 
-
-template<typename T>
+template<BitmaskTypeLike T>
 constexpr auto
 operator^=(T &lhs, const T rhs)
 {

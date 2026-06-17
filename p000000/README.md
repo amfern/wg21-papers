@@ -4,13 +4,13 @@ gcc already supports reflections:
 
 ``` shell
 bazel test --config gcc //src/...
-bazel test --config gcc //src:bitmask_operators_example
+bazel run --config gcc //src:example
 ```
 
 Compile with llvm once reflection are supported
 ``` shell
 bazel test --config llvm //src/...
-bazel test --config llvm //src:bitmask_operators_example
+bazel run --config llvm //src:example
 ```
 
 Compile with llvm from https://github.com/bloomberg/clang-p2996

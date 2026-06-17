@@ -3,8 +3,11 @@
 
 #include "src/bitmask_operators.hpp"
 
-enum class [[=bitmask]] A { x = 1, y = 2 };
-enum class [[=bitmask]] B : unsigned long { x = 0x80000000, y = 0x40000000 };
+enum class [[=bitmask_type]] A { x = 1, y = 2 };
+
+enum class B : unsigned long { x = 0x80000000, y = 0x40000000 };
+constexpr bool enable_bitmask_type(B);
+
 enum class C{x,y};
 
 int main() {
