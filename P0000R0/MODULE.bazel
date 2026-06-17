@@ -67,7 +67,3 @@ toolchain.target(
 use_repo(toolchain, "llvm_toolchains")
 
 register_toolchains("@llvm_toolchains//:all")
-
-
-
-register_execution_platforms("//platforms:clang_p2996")
