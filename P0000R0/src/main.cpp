@@ -1,7 +1,9 @@
 // main.cpp
 #include <cassert>
 
-#include "src/bitmask_operators.hpp"
+#include "src/bitmask.hpp"
+
+using namespace std::bitmask;
 
 enum class [[=bitmask_type]] A { x = 1, y = 2 };
 

@@ -1,6 +1,8 @@
-#include "src/bitmask_operators.hpp"
+#include "src/bitmask.hpp"
 
 #include "gtest/gtest.h"
+
+using namespace std::bitmask;
 
 // enable bitmask operatio
 enum class [[=bitmask_type]] A { x = 1, y = 2 };

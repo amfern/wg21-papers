@@ -4,7 +4,7 @@ cc_test(
     name = "test_bitmask_operators",
     srcs = ["test_bitmask_operators.cpp"],
     deps = [
-        "//src:bitmask_operators",
+        "//src:bitmask",
         "@googletest//:gtest_main",
     ],
 )
