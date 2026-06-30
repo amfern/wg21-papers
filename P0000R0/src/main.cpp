@@ -3,12 +3,10 @@
 
 #include "src/bitmask.hpp"
 
-using namespace std::bitmask;
-
-enum class [[=bitmask_type]] A { x = 1, y = 2 };
+enum class [[=std::bitmask_type]] A { x = 1, y = 2 };
 
 enum class B : unsigned long { x = 0x80000000, y = 0x40000000 };
-constexpr bool enable_bitmask_type(B);
+constexpr std::bitmask_flag enable_bitmask_type(B);
 
 enum class C{x,y};
 

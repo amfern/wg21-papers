@@ -73,14 +73,17 @@
 
 #include "src/p3394.hpp"
 
-namespace std::bitmask {
+namespace std {
 
 inline constexpr struct BitmaskType {} bitmask_type;
+inline constexpr struct BitmaskRetType {} bitmask_ret_type;
+
+// struct bitmask_flag {};
 
 template <typename T>
 concept BitmaskTypeLike =
     std::is_enum_v<T> and (std::meta::has_annotation(^^T, bitmask_type) or
-                           requires(T e) { enable_bitmask_type(e); });
+                           requires(T e) { { enable_bitmask_type(e) } -> std::same_as<BitmaskRetType>; });
 
 template <BitmaskTypeLike T>
 constexpr auto operator|(const T lhs, const T rhs) {
