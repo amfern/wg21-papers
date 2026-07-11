@@ -4,9 +4,6 @@
 
 #include "gtest/gtest.h"
 
-// TODO: i must include  use it for the reference to get caught
-using namespace std;
-
 enum class B : unsigned long { x = 0x80000000, y = 0x40000000 };
 
 // enable bitmask operators on B class, can be used on predefined enums

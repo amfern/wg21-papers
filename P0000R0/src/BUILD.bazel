@@ -6,7 +6,6 @@ cc_library(
     name = "bitmask",
     hdrs = [
         "bitmask.hpp",
-        "p3394.hpp",
     ],
     linkopts = ["-lstdc++"],
     visibility = ["//visibility:public"],

@@ -75,52 +75,45 @@ namespace std {
 inline constexpr struct BitmaskType {} bitmask_type;
 inline constexpr struct BitmaskRetType {} bitmask_ret_type;
 
-// struct bitmask_flag {};
-
-// template <typename T>
-// concept BitmaskTypeLike =
-//     std::is_enum_v<T> and (std::meta::has_annotation(^^T, bitmask_type) or
-//                            requires(T e) { { enable_bitmask_type(e) } -> std::same_as<BitmaskRetType>; });
 template <typename T>
 concept BitmaskTypeLike =
-    std::is_enum_v<T> and (!std::meta::annotations_of_with_type(^^T,std::meta::type_of(^^bitmask_type)).empty() or
+    std::is_enum_v<T> and (!meta::annotations_of_with_type(^^T,meta::type_of(^^bitmask_type)).empty() or
                            requires(T e) { { enable_bitmask_type(e) } -> std::same_as<BitmaskRetType>; });
 
+} // std
 
-template <BitmaskTypeLike T>
-constexpr auto operator|(const T lhs, const T rhs) {
+template <std::BitmaskTypeLike T>
+constexpr auto operator|(T lhs, T rhs) {
   return static_cast<T>(std::to_underlying(lhs) | std::to_underlying(rhs));
 }
 
-template <BitmaskTypeLike T>
-constexpr auto operator&(const T lhs, const T rhs) {
+template <std::BitmaskTypeLike T>
+constexpr auto operator&(T lhs, T rhs) {
   return static_cast<T>(std::to_underlying(lhs) & std::to_underlying(rhs));
 }
 
-template <BitmaskTypeLike T>
-constexpr auto operator^(const T lhs, const T rhs) {
+template <std::BitmaskTypeLike T>
+constexpr auto operator^(T lhs, T rhs) {
   return static_cast<T>(std::to_underlying(lhs) ^ std::to_underlying(rhs));
 }
 
-template <BitmaskTypeLike T> constexpr auto operator~(const T lhs) {
-  return static_cast<T>(~std::to_underlying(lhs));
+template <std::BitmaskTypeLike T> constexpr auto operator~(T lhs) {
+  return static_cast<T>(~std::to_underlying<T>(lhs));
 }
 
-template <BitmaskTypeLike T>
-constexpr auto operator|=(const T &lhs, const T rhs) {
-  lhs = static_cast<T>(std::to_underlying(lhs) | std::to_underlying(rhs));
+template <std::BitmaskTypeLike T>
+constexpr auto operator|=(T &lhs, T rhs) {
+  lhs = lhs | rhs;
   return lhs;
 }
 
-template <BitmaskTypeLike T>
-constexpr auto operator&=(const T &lhs, const T rhs) {
-  lhs = static_cast<T>(std::to_underlying(lhs) & std::to_underlying(rhs));
+template <std::BitmaskTypeLike T>
+constexpr auto operator&=(T &lhs, T rhs) {
+  lhs = lhs & rhs;
   return lhs;
 }
 
-template <BitmaskTypeLike T> constexpr auto operator^=(T &lhs, const T rhs) {
-  lhs = static_cast<T>(std::to_underlying(lhs) ^ std::to_underlying(rhs));
+template <std::BitmaskTypeLike T> constexpr auto operator^=(T &lhs, T rhs) {
+  lhs = lhs ^ rhs;
   return lhs;
 }
-
-} // std::bitmask
