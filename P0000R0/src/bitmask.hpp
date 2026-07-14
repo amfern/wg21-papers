@@ -102,18 +102,18 @@ template <std::BitmaskTypeLike T> constexpr auto operator~(T lhs) {
 }
 
 template <std::BitmaskTypeLike T>
-constexpr auto operator|=(T &lhs, T rhs) {
+constexpr T operator|=(T &lhs, T rhs) {
   lhs = lhs | rhs;
   return lhs;
 }
 
 template <std::BitmaskTypeLike T>
-constexpr auto operator&=(T &lhs, T rhs) {
+constexpr T operator&=(T &lhs, T rhs) {
   lhs = lhs & rhs;
   return lhs;
 }
 
-template <std::BitmaskTypeLike T> constexpr auto operator^=(T &lhs, T rhs) {
+template <std::BitmaskTypeLike T> constexpr T operator^=(T &lhs, T rhs) {
   lhs = lhs ^ rhs;
   return lhs;
 }
