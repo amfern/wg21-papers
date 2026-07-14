@@ -1,0 +1,70 @@
+module(name = "bitmask")
+
+bazel_dep(name = "googletest", version = "1.17.0.bcr.2")
+bazel_dep(name = "bazel_skylib", version = "1.9.0")
+bazel_dep(name = "bazel_lib", version = "3.3.1")
+bazel_dep(name = "platforms", version = "1.1.0")
+bazel_dep(name = "rules_cc", version = "0.2.19")
+bazel_dep(name = "rules_build_error", version = "0.11.0", dev_dependency = True)
+
+############################################################################
+# configure gcc toolchain
+############################################################################
+bazel_dep(name = "gcc_toolchain", version = "0.10.0")
+
+gcc_toolchains = use_extension("@gcc_toolchain//toolchain:module_extensions.bzl", "gcc_toolchains", dev_dependency = True)
+
+[
+    [
+        gcc_toolchains.toolchain(
+            name = "gcc_toolchain_{}".format(arch),
+            target_arch = arch,
+            extra_cxxflags = [
+                "-std=c++26",
+                "-freflection",
+            ],
+        ),
+        use_repo(gcc_toolchains, "gcc_toolchain_{}".format(arch)),
+        register_toolchains(
+            "@gcc_toolchain_{}//:cc_toolchain".format(arch),
+            "@gcc_toolchain_{}//:fortran_toolchain".format(arch),
+            dev_dependency = True,
+        ),
+    ]
+    for arch in [
+        "aarch64",
+        "armv7",
+        "x86_64",
+    ]
+]
+
+
+############################################################################
+# configure llvm toolchain
+############################################################################
+bazel_dep(name = "llvm", version = "0.8.6")
+
+toolchain = use_extension("@llvm//extensions:toolchain.bzl", "toolchain")
+
+llvm_source = use_extension("@llvm//extensions:llvm_source.bzl", "llvm_source")
+# llvm_source.version(llvm_version = "23.0.0")
+
+toolchain.exec(
+    arch = "x86_64",
+    os = "linux",
+)
+toolchain.exec(
+    arch = "aarch64",
+    os = "linux",
+)
+toolchain.target(
+    arch = "x86_64",
+    os = "linux",
+)
+toolchain.target(
+    arch = "aarch64",
+    os = "linux",
+)
+use_repo(toolchain, "llvm_toolchains")
+
+register_toolchains("@llvm_toolchains//:all")

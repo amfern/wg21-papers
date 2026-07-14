@@ -1,0 +1,19 @@
+# Use the toolchain-resolution mechanism for C++
+build:hermetic --incompatible_enable_cc_toolchain_resolution
+build:hermetic --action_env=BAZEL_DO_NOT_DETECT_CPP_TOOLCHAIN=1
+build:hermetic --incompatible_strict_action_env=true
+
+# fail on warnning
+build --copt=-Werror
+build --linkopt=-Werror
+
+build:llvm --config=hermetic
+build:llvm --extra_toolchains=@llvm_toolchains//:all
+build:llvm --cxxopt -freflection
+build:llvm --cxxopt -std=c++26
+
+build:gcc --config=hermetic
+build:gcc --extra_toolchains=@gcc_toolchain_x86_64//:cc_toolchain
+
+# Avoid building all targets when testing
+test --build_tests_only
