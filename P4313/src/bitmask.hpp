@@ -79,7 +79,8 @@ constexpr T operator&=(T &lhs, T rhs) {
   return lhs;
 }
 
-template <std::BitmaskTypeLike T> constexpr T operator^=(T &lhs, T rhs) {
+template <std::BitmaskTypeLike T>
+constexpr T operator^=(T &lhs, T rhs) {
   lhs = lhs ^ rhs;
   return lhs;
 }

@@ -1,0 +1,21 @@
+Q: We shouldn't be using enums class in the first place, and we should have something better, or improve bitset..
+   In a sense we should decouple the bitset "tool" from the underlying bits representation
+   Conflation of ideas. enum bitflags are easy, but not simple. They complect naming bits (what we actually want) with representing them. True, it’s not our fault; this is the legacy of C that multiple languages double down on at this point. But it’s also not right. We say “the type has members A and B” then we pretend that A|B is also a member of the type. But that’s immediately subverting type safety: we have confused representation with naming.
+   https://www.reddit.com/r/cpp/comments/1v0pizv/comment/oyhlddi/?utm_source=share&utm_medium=web3x&utm_name=web3xcss&utm_term=1&utm_content=share_button
+A: This is true, it can be a wrapper type, or a bitfield appraoch as as propsoed here https://godbolt.org/z/Yvn7r38z7, but that would be a new type in C++ language, and therefore a different paper
+   Or maybe it better to extend bitset to have type safety bitwise operators
+
+Q: The error handling for debug things in the ranges library can be confused with pipes, and show unrelated errors.
+A: It shouldn't be a big problem
+
+Q: Will it increase compilation time
+A: trivial increase, and it's in own flag
+
+
+Q: it’s still going to be kind of annoying to apply bit operations to enumeration types you don’t own.
+A: it is possible (see enable_bitmask_type), but we want to keep it out of this proposal for simplicity sake
+
+
+Q: Aesthetics. I don’t want using these things to look like using plain old integers, because using plain old integers is fraught with peril. Which leads to…
+A: it probably make sense to add .set(), .get(), .union(), .inverse() functions to class enum, however since class enum not allowed to have function, it's not possible.
+   We can make assigment via subscript operator like so  "a2[A::x] = true;", but probably in a different proposal
