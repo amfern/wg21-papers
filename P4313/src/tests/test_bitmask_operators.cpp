@@ -47,6 +47,6 @@ TEST(BitmaskOperators, static_assert) {
     constexpr Permission user_perms = Permission::Read | Permission::Write | Permission::Execute;
     constexpr Permission can_read_and_write = Permission::Read | Permission::Write;
 
-    static_assert(constexpr (user_perms & Permission::Read) == Permission::Read);
-    static_assert(constexpr (user_perms & can_read_and_write) == can_read_and_write);
+    static_assert((user_perms & Permission::Read) == Permission::Read);
+    static_assert((user_perms & can_read_and_write) == can_read_and_write);
 }
