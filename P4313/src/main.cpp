@@ -15,8 +15,6 @@ int main() {
     A a2=a1&A::y; // Turn on A::y only
     assert(A::y == a2);
     a2^=A::x; // toggle A::x
-    // can i change the operator precedence
-    // warning: | has lower precedence than ==; == will be evaluated first [-Wparentheses]
     assert((A::x | A::y) == a2);
     A a3=a1&~A::x; // Turn off A::X
     assert(A::y == a3);

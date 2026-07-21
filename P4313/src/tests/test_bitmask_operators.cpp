@@ -41,3 +41,12 @@ TEST(BitmaskOperators, example_from_paper) {
     ASSERT_TRUE((user_perms & Permission::Read) == Permission::Read);
     ASSERT_TRUE((user_perms & can_read_and_write) == can_read_and_write);
 }
+
+TEST(BitmaskOperators, static_assert) {
+    // Combine permissions
+    constexpr Permission user_perms = Permission::Read | Permission::Write | Permission::Execute;
+    constexpr Permission can_read_and_write = Permission::Read | Permission::Write;
+
+    static_assert((user_perms & Permission::Read) == Permission::Read);
+    static_assert((user_perms & can_read_and_write) == can_read_and_write);
+}
