@@ -20,9 +20,50 @@ cc_test(
     ],
 )
 
+# cc_build_error_test(
+#     name = "test_bitmask_operators_compile_error",
+#     src = "test_bitmask_operators_death.cpp",
+#     # compile_stderr = matcher.has_substr("error: no match for 'operator|' (operand types are 'C' and 'C')"),
+#     compile_stderr = matcher.has_substr("adssadads"),
+#     deps = [
+#         "//src:bitmask",
+#     ],
+# )
+
 cc_build_error_test(
-    name = "test_bitmask_operators_compile_error",
+    name = "test_bitmask_cant_or_enums_of_different_type",
     src = "test_bitmask_operators_death.cpp",
-    compile_stderr = matcher.has_substr("error: no match for 'operator|' (operand types are 'C' and 'C')"),
+    compile_stderr = matcher.has_substr("error: no match for 'operator|' (operand types are 'C' and 'B')"),
+    deps = [
+        "//src:bitmask",
+    ],
 )
 
+
+cc_build_error_test(
+    name = "test_bitmask_cant_and_enums_of_different_type",
+    src = "test_bitmask_operators_death.cpp",
+    compile_stderr = matcher.has_substr("error: no match for 'operator&' (operand types are 'C' and 'B')"),
+    deps = [
+        "//src:bitmask",
+    ],
+)
+
+cc_build_error_test(
+    name = "test_bitmask_cant_xor_enums_of_different_type",
+    src = "test_bitmask_operators_death.cpp",
+    compile_stderr = matcher.has_substr("error: no match for 'operator^' (operand types are 'C' and 'B')"),
+    deps = [
+        "//src:bitmask",
+    ],
+)
+
+
+cc_build_error_test(
+    name = "test_bitmask_cant_not_enums_of_different_type",
+    src = "test_bitmask_operators_death.cpp",
+    compile_stderr = matcher.has_substr("error: cannot convert 'B' to 'C' in initialization"),
+    deps = [
+        "//src:bitmask",
+    ],
+)
