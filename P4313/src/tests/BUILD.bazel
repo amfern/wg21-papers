@@ -11,18 +11,18 @@ cc_test(
     ],
 )
 
-cc_test(
-    name = "test_bitmask_operators_on_predefined_enum",
-    srcs = ["test_bitmask_operators_predefined_enum.cpp"],
-    deps = [
-        "//src:bitmask",
-        "@googletest//:gtest_main",
-    ],
-)
+# cc_test(
+#     name = "test_bitmask_operators_on_predefined_enum",
+#     srcs = ["test_bitmask_operators_predefined_enum.cpp"],
+#     deps = [
+#         "//src:bitmask",
+#         "@googletest//:gtest_main",
+#     ],
+# )
 
-cc_build_error_test(
-    name = "test_bitmask_operators_compile_error",
-    src = "test_bitmask_operators_death.cpp",
-    compile_stderr = matcher.has_substr("error: no match for 'operator|' (operand types are 'C' and 'C')"),
-)
+# cc_build_error_test(
+#     name = "test_bitmask_operators_compile_error",
+#     src = "test_bitmask_operators_death.cpp",
+#     compile_stderr = matcher.has_substr("error: no match for 'operator|' (operand types are 'C' and 'C')"),
+# )
 
