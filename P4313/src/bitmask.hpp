@@ -64,7 +64,12 @@ constexpr auto operator^(T lhs, T rhs) {
 }
 
 template <std::BitmaskTypeLike T> constexpr auto operator~(T lhs) {
-  return static_cast<T>(~std::to_underlying<T>(lhs));
+  // we treat boolean specially because of integral promotion rules https://sub.fail/posts/complement-of-true/
+  if constexpr(std::same_as<bool,std::underlying_type_t<T>>) {
+    return static_cast<T>(!static_cast<bool>(lhs));
+  } else {
+    return static_cast<T>(~std::to_underlying(lhs));
+  }
 }
 
 template <std::BitmaskTypeLike T>

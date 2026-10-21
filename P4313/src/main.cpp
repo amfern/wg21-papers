@@ -3,7 +3,7 @@
 
 #include "src/bitmask.hpp"
 
-enum class [[=std::bitmask_type]] A { x = 1, y = 2 };
+enum class [[=std::bitmask_type]] A { x = 1, y = 2, z = 4, xy = x|y };
 
 enum class B : unsigned long { x = 0x80000000, y = 0x40000000 };
 constexpr std::BitmaskRetType enable_bitmask_type(B);
@@ -11,6 +11,11 @@ constexpr std::BitmaskRetType enable_bitmask_type(B);
 enum class C{x,y};
 
 int main() {
+    // auto perm1 = A::x | A::y;
+  
+    auto perm2 = A::x | A::z;
+    assert((perm2 & A::xy) == A::xy);
+
     A a1=A::x | A::y;
     A a2=a1&A::y; // Turn on A::y only
     assert(A::y == a2);
