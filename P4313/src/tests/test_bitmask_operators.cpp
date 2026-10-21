@@ -50,3 +50,14 @@ TEST(BitmaskOperators, static_assert) {
     static_assert((user_perms & Permission::Read) == Permission::Read);
     static_assert((user_perms & can_read_and_write) == can_read_and_write);
 }
+
+// Test edge case with bool and integral promotion https://dryperspective.github.io/posts/complement-of-true/
+enum class [[=std::bitmask_type]] boolean : bool{
+    FALSE,
+    TRUE,
+};
+
+TEST(BitmaskOperators, test_bool_integral_promotion) {
+    static_assert(~boolean::TRUE == boolean::FALSE);
+    static_assert(~boolean::TRUE != boolean::TRUE);
+}
