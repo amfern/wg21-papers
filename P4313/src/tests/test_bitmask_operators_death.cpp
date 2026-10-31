@@ -1,6 +1,9 @@
-enum class C{x,y};
+#include "src/bitmask.hpp"
 
-C c1 = C::x | C::y;
-C c2 = c1 & C::y;
-c2 ^= C::x;
-C c3 = ~c1;
+enum class [[=std::bitmask_type]] B{x,y};
+enum class [[=std::bitmask_type]] C{x,y};
+
+C c1 = C::x | C::y | B::x | B::y;
+C c2 = C::x & C::y & B::x & B::y;
+C c3 = C::x ^ C::y ^ B::x ^ B::y;
+C c4 = ~(B::x&~B::y);
