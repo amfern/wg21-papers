@@ -3,6 +3,15 @@ load("@rules_build_error//lang/cc:defs.bzl", "cc_build_error_test")
 load("@rules_build_error//matcher:defs.bzl", "matcher")
 
 cc_test(
+    name = "test_bitmask_wrapper",
+    srcs = ["test_bitmask_wrapper.cpp"],
+    deps = [
+        "//src:bitmask_wrapper",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
     name = "test_bitmask_operators",
     srcs = ["test_bitmask_operators.cpp"],
     deps = [
@@ -55,5 +64,16 @@ cc_build_error_test(
     compile_stderr = matcher.has_substr("error: cannot convert 'B' to 'C' in initialization"),
     deps = [
         "//src:bitmask",
+    ],
+)
+
+# Tests fails due to ADL resolution https://brevzin.github.io/c++/2026/10/14/push-vs-pull-ii/
+cc_build_error_test(
+    name = "test_bitmask_operators_namespace_lookup_error",
+    src = "test_bitmask_operators_lookup_death.cpp",
+    compile_stderr = matcher.has_substr("error: no match for 'operator|' (operand types are 'N::Permission' and 'N::Permission')"),
+    deps = [
+        "//src:bitmask",
+        "@googletest//:gtest_main",
     ],
 )

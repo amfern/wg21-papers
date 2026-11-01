@@ -61,3 +61,27 @@ TEST(BitmaskOperators, test_bool_integral_promotion) {
     static_assert(~boolean::TRUE == boolean::FALSE);
     static_assert(~boolean::TRUE != boolean::TRUE);
 }
+
+namespace N {
+  enum class[[= std::bitmask_type]] Permission {
+    None = 0,
+    Read = 1 << 0,
+    Write = 1 << 1,
+    Execute = 1 << 2,
+  };
+
+  using ::operator|, ::operator&, ::operator^, ::operator~, ::operator|=, ::operator&=, ::operator^=;
+}
+
+namespace M {
+    // some unrelated type
+    struct Mask { };
+    auto operator|(Mask, Mask) -> Mask;
+
+    auto something(N::Permission permissions) -> void {
+        using enum N::Permission;
+        if ((permissions | Write) == Write) {
+            // do writing
+        }
+    }
+}
