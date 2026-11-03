@@ -313,11 +313,10 @@ This proposal builds on the example from [@P4380R1]{.title} by Barry Revzin usin
 3. Enabling bitmask behavior([bitmask.types]{.sref}) on `enum class` is easy and simple for the user.
 
 # Reference Implementation
-1. On godbolt Clang reflection [https://godbolt.org/z/bheWMGj1P](https://godbolt.org/z/bheWMGj1P)
-1. On godbolt GCC 16.1 [https://godbolt.org/z/jK9rbM1v3](https://godbolt.org/z/jK9rbM1v3)
-1. Trying locally with GCC 16.1 [here](https://github.com/amfern/wg21-papers/tree/P4313)
+1. Godbolt using Barry's clang [https://godbolt.org/z/TbYsv4sPx](https://godbolt.org/z/TbYsv4sPx)
+<!-- TODO: need to get Barry's compiler working 1. Trying locally with GCC 16.1 [here](https://github.com/amfern/wg21-papers/tree/P4313) -->
 
-
+<!-- TODO: $ operator has red syntax because it's not yet standart C++ operator  --> 
 ```{.cpp em=none}
 #include <type_traits>
 #include <utility>
@@ -331,22 +330,22 @@ namespace std {
                return;
             }
 
-            queue_injection(^^{
-                constexpr $ty operator~($ty e) {
-                    if constexpr(std::same_as<bool,std::underlying_type_t<$ty>>) {
+            if (is_base_of_type(ty, ^^bool)) {
+                queue_injection(^^{
+                    constexpr $ty operator~($ty e) {
                         return bool(e);
-                    } else {
+                    }
+                });
+            } else {
+                queue_injection(^^{
+                    constexpr $ty operator~($ty e) {
                         return static_cast<$ty>(~std::to_underlying(e));
                     }
-                }
-            });
+                });
+            }
 
             auto binary = [=](std::meta::operators op, std::meta::operators op_eq) {
                 queue_injection(^^{
-                    // TODO: the $ causing italic formatting
-                    // TODO: update godbolt examples
-                    // TODO: trailing return type make formatting pretieres, easier to deduce type from parameter instead of declaring std::declval ahead. Which eseetially saves on typing.
-                    // auto foo(T1 arg1,T2 arg2) -> decltype(arg1+arg2);
                     constexpr $ty operator $op($ty lhs, $ty rhs) {
                         return static_cast<$ty>(std::to_underlying(lhs) $op std::to_underlying(rhs));
                     }
@@ -404,16 +403,19 @@ With the content:
 > }
 > ```
 > [2]{.pnum} A definition of the complement operator is also injected into the scope of enumeration definition as follows:
+> For Boolean type:
 > ```cpp
 > constexpr T operator~ (T lhs) noexcept {
->   if constexpr(same_as<bool,underlying_type_t<T>>) {
->       return bool(lhs);
->   } else {
->       return static_cast<T>(~to_underlying(lhs));
->   }
+>    return bool(lhs);
 > } 
 > ```
->
+> For every other type:
+> ```cpp
+> constexpr T operator~ (T lhs) noexcept {
+>    return static_cast<T>(~to_underlying(lhs));
+> } 
+> ```
+
 > # 22.x.3 Annotation `bitmask_type` {-}
 > ```cpp
 > namespace std {
