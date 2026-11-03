@@ -21,3 +21,5 @@ docker run -ti --rm -v (pwd):/work -w /work clang-p2996-bazel
 $ bazel test //src/...
 $ bazel run //src:bitmask_operators_example
 ```
+
+# build the paper

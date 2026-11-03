@@ -2,21 +2,22 @@
 title: "Bitmask operations for enums"
 document: P4313R1
 date: today
-audience:
-  - Library Evolution
+audience: LWG
 author:
   - name: Iliya Guterman
     email: <iliyagutermann@gmail.com>
   - name: Anthony Williams
     email: <anthony@justsoftwaresolutions.co.uk>
 toc: true
+status: progress
+tag: enum
 ---
 
 # Revision history {- .unlisted .collapsed}
 R2:
 
 - address concern over bool underlying type raised in https://dryperspective.github.io/posts/complement-of-true/
-- Depends on the proposal p4380, to address name lookup issues raised in https://brevzin.github.io/c++/2026/10/14/push-vs-pull-ii/, and adopt the solution from there.
+- Depends on the proposal [@P4380R1]{.title}, to address name lookup issues raised in https://brevzin.github.io/c++/2026/10/14/push-vs-pull-ii/, and adopt the solution from there.
 
 R1:
 
@@ -304,7 +305,7 @@ int main () {
 
 # Design
 
-This proposal builds on the example from [P4380](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2026/p4380r1.html#generating-bitmask-operators) by Barry Revzin using `queue_injection()` to add the bitmask operators to any `enum class` with the appropriate annotation. 
+This proposal builds on the example from [@P4380R1]{.title} by Barry Revzin using `queue_injection()` to add the bitmask operators to any `enum class` with the appropriate annotation. 
 
 ## Design consideration
 1. No implicit conversion: It should not be possible to assign bitmasks of different types to each other or perform operations between them.
@@ -317,7 +318,7 @@ This proposal builds on the example from [P4380](https://www.open-std.org/jtc1/s
 1. Trying locally with GCC 16.1 [here](https://github.com/amfern/wg21-papers/tree/P4313)
 
 
-```cpp
+```{.cpp em=none}
 #include <type_traits>
 #include <utility>
 #include <meta>
