@@ -2,15 +2,15 @@
 title: "Bitmask operations for enums"
 document: P4313R1
 date: today
-audience:
-  - Library Evolution
+audience: LWG
 author:
   - name: Iliya Guterman
     email: <iliyagutermann@gmail.com>
   - name: Anthony Williams
     email: <anthony@justsoftwaresolutions.co.uk>
 toc: true
-toc-depth: 4
+status: progress
+tag: enum
 ---
 
 # Revision history
