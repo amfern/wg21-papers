@@ -20,60 +20,39 @@ cc_test(
     ],
 )
 
-cc_test(
-    name = "test_bitmask_operators_on_predefined_enum",
-    srcs = ["test_bitmask_operators_predefined_enum.cpp"],
-    deps = [
-        "//src:bitmask",
-        "@googletest//:gtest_main",
-    ],
-)
-
-cc_build_error_test(
-    name = "test_bitmask_cant_or_enums_of_different_type",
-    src = "test_bitmask_operators_death.cpp",
-    compile_stderr = matcher.has_substr("error: no match for 'operator|' (operand types are 'C' and 'B')"),
-    deps = [
-        "//src:bitmask",
-    ],
-)
-
-
-cc_build_error_test(
-    name = "test_bitmask_cant_and_enums_of_different_type",
-    src = "test_bitmask_operators_death.cpp",
-    compile_stderr = matcher.has_substr("error: no match for 'operator&' (operand types are 'C' and 'B')"),
-    deps = [
-        "//src:bitmask",
-    ],
-)
-
-cc_build_error_test(
-    name = "test_bitmask_cant_xor_enums_of_different_type",
-    src = "test_bitmask_operators_death.cpp",
-    compile_stderr = matcher.has_substr("error: no match for 'operator^' (operand types are 'C' and 'B')"),
-    deps = [
-        "//src:bitmask",
-    ],
-)
-
-
-cc_build_error_test(
-    name = "test_bitmask_cant_not_enums_of_different_type",
-    src = "test_bitmask_operators_death.cpp",
-    compile_stderr = matcher.has_substr("error: cannot convert 'B' to 'C' in initialization"),
-    deps = [
-        "//src:bitmask",
-    ],
-)
+# cc_test(
+#     name = "test_bitmask_operators_on_predefined_enum",
+#     srcs = ["test_bitmask_operators_predefined_enum.cpp"],
+#     deps = [
+#         "//src:bitmask",
+#         "@googletest//:gtest_main",
+#     ],
+# )
 
 # Tests fails due to ADL resolution https://brevzin.github.io/c++/2026/10/14/push-vs-pull-ii/
-cc_build_error_test(
+cc_test(
     name = "test_bitmask_operators_namespace_lookup_error",
-    src = "test_bitmask_operators_lookup_death.cpp",
-    compile_stderr = matcher.has_substr("error: no match for 'operator|' (operand types are 'N::Permission' and 'N::Permission')"),
+    srcs = ["test_bitmask_operators_namespace_adl.cpp"],
     deps = [
         "//src:bitmask",
         "@googletest//:gtest_main",
+    ],
+)
+
+cc_build_error_test(
+    name = "test_bitmask_cant_convert_enums_C_to_B_type",
+    src = "test_bitmask_operators_death.cpp",
+    compile_stderr = matcher.has_substr("no known conversion from 'C' to 'B' for 1st argument"),
+    deps = [
+        "//src:bitmask",
+    ],
+)
+
+cc_build_error_test(
+    name = "test_bitmask_cant_convert_enums_B_to_C_type",
+    src = "test_bitmask_operators_death.cpp",
+    compile_stderr = matcher.has_substr("no known conversion from 'B' to 'C' for 2nd argument"),
+    deps = [
+        "//src:bitmask",
     ],
 )

@@ -6,6 +6,7 @@
 
 namespace std {
     // TODO(ask): if the lookup is an issue, it possiblie to do some compiler change, and add a new type of enums that have bitmask operators? eg `bitmask class {}`
+    // TODO(ask): can we inherite enum eg class enum A : enum B? why not , i thik it should be available also in C++ for extending enums.
     // TODO: validate that the enum flags values are not colliding and can be used as flags
     struct BitmaskType {
         static consteval auto on_complete(std::meta::info ty) -> void {
