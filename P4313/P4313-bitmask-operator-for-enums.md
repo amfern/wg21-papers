@@ -330,19 +330,16 @@ namespace std {
                return;
             }
 
-            if (is_base_of_type(ty, ^^bool)) {
-                queue_injection(^^{
-                    constexpr $ty operator~($ty e) {
-                        return bool(e);
-                    }
-                });
-            } else {
-                queue_injection(^^{
-                    constexpr $ty operator~($ty e) {
-                        return static_cast<$ty>(~std::to_underlying(e));
-                    }
-                });
-            }
+            std::meta::operators tenary_op_to_use =
+                is_same_type(std::meta::underlying_type(ty), ^^bool)
+                    ? std::meta::operators::op_exclamation
+                    : std::meta::operators::op_tilde;
+
+            queue_injection(^^{
+                constexpr $ty operator~($ty e) {
+                    return static_cast<$ty>($tenary_op_to_use std::to_underlying(e));
+                }
+            });
 
             auto binary = [=](std::meta::operators op, std::meta::operators op_eq) {
                 queue_injection(^^{
