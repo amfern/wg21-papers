@@ -1,21 +1,8 @@
 # enum class Bitmask
 
-gcc already supports reflections:
+## the tests
 
-``` shell
-bazel test --config gcc //src/...
-bazel run --config gcc //src:example
-```
-
-Compile with llvm once reflection are supported
-``` shell
-bazel test --config llvm //src/...
-bazel run --config llvm //src:example
-```
-
-# run the paper tests
-
-2. compile barries fork of llvm with 
+1. Compile barries fork of llvm with 
  ``` shell
 git clone git@github.com:brevzin/llvm-project.git -b compiler-explorer/barry
 
@@ -27,3 +14,8 @@ cmake -G Ninja -S llvm -B build \
 ninja -v -C build package
 ```
 
+2. Run the tests using Barry's llvm fork
+``` shell
+bazel test //src/...
+bazel run //src:example
+```
