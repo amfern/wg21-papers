@@ -1,6 +1,6 @@
 ---
 title: "Bitmask operations for enums"
-document: P4313R1
+document: P4313R2
 date: today
 audience: LWG
 author:
