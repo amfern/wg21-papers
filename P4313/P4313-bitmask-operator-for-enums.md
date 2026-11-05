@@ -13,7 +13,12 @@ status: progress
 tag: enum
 ---
 
-# Revision history
+# Revision history {- .unlisted .collapsed}
+R2:
+
+- address concern over bool underlying type raised in https://dryperspective.github.io/posts/complement-of-true/
+- Depends on the proposal [@P4380R1]{.title}, to address name lookup issues raised in https://brevzin.github.io/c++/2026/10/14/push-vs-pull-ii/, and adopt the solution from there.
+
 R1:
 
 - Fix operator precedence in the opening example
@@ -48,7 +53,31 @@ int main () {
 ```
 
 # Motivations
-## Motivation 1: Drawing inspiration from other programming languages.
+
+## Motivation 1: Bitmask operators on enum was something that used to work well in C
+Bitmask operators on enum was something that used to work well in C, and we lost it with `enum class` even though enum class provided us with the very type safety that made this a safer thing to do.
+it's also unclear why bitmask operators were omitted in the first place. They aren't even mentioned in the proposal [n2347](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2007/n2347.pdf)
+       
+```C
+typedef enum Permission {
+    PERMISSION_NONE    = 0,
+    PERMISSION_READ    = 1u << 0, // 0b001
+    PERMISSION_WRITE   = 1u << 1, // 0b010
+    PERMISSION_EXECUTE = 1u << 2, // 0b100
+} Permission;
+
+int main(void)
+{
+    Permission user_perms = PERMISSION_READ | PERMISSION_WRITE;
+
+    // Check permissions
+    if (user_perms & PERMISSION_READ) {
+        printf("Can read\n");
+    }
+}
+```
+
+## Motivation 2: Drawing inspiration from other programming languages.
 
 As a developer coming from languages other than C++, I grew accustomed to using enums to represent flags.
 However, such behavior is noticeably absent from the C++ language.
@@ -143,7 +172,7 @@ if (userPerms & Permission.READ) {
 }
 ```
 
-## Motivation 2: Reduce boilerplate code
+## Motivation 3: Reduce boilerplate code
 
 A repeated boilerplate code for bitmask behavior can be found with quite high frequency in the wild
 
@@ -201,7 +230,7 @@ enum class [[=std::bitmask_type]] perms : unsigned {
 };
 ```
 
-## Motivation 3: Standardize solution under C++ standard library
+## Motivation 4: Standardize solution under C++ standard library
 This type of use case is a sought-after feature and has led to the development of many standalone solutions.
 
 1. A bitmask solution was proposed by Anthony Williams in 2015: [Using Enum Classes as Bitfields](https://www.justsoftwaresolutions.co.uk/cplusplus/using-enum-classes-as-bitfields.html). 
@@ -214,28 +243,6 @@ This type of use case is a sought-after feature and has led to the development o
 1. Related discussion from reddit: [Am I the only one who thinks this? (about enum)](https://www.reddit.com/r/cpp/s/n5UCCufvBc)
 
 # Considered alternatives solutions
-
-## Alternatives: Why not use C-style `typedef enum` instead? 
-Reverting to using C-style enums means losing the benefits of scoped constants and the type safety provided by C++ `enum class`.
-       
-```C
-typedef enum Permission {
-    PERMISSION_NONE    = 0,
-    PERMISSION_READ    = 1u << 0, // 0b001
-    PERMISSION_WRITE   = 1u << 1, // 0b010
-    PERMISSION_EXECUTE = 1u << 2, // 0b100
-} Permission;
-
-int main(void)
-{
-    Permission user_perms = PERMISSION_READ | PERMISSION_WRITE;
-
-    // Check permissions
-    if (user_perms & PERMISSION_READ) {
-        printf("Can read\n");
-    }
-}
-```
 
 ## Alternatives: Can I use std::bitset instead?
 
@@ -298,7 +305,7 @@ int main () {
 
 # Design
 
-The design builds upon the solution proposed by Andreas Fertig [C++20 Concepts applied - Safe bitmasks using scoped enums](https://andreasfertig.com/blog/2024/01/cpp20-concepts-applied/) which in itself is an extension to [Using Enum Classes as Bitfields](https://www.justsoftwaresolutions.co.uk/cplusplus/using-enum-classes-as-bitfields.html) initially devised by Anthony Williams 
+This proposal builds on the example from [@P4380R1]{.title} by Barry Revzin using `queue_injection()` to add the bitmask operators to any `enum class` with the appropriate annotation. 
 
 ## Design consideration
 1. No implicit conversion: It should not be possible to assign bitmasks of different types to each other or perform operations between them.
@@ -306,65 +313,54 @@ The design builds upon the solution proposed by Andreas Fertig [C++20 Concepts a
 3. Enabling bitmask behavior([bitmask.types]{.sref}) on `enum class` is easy and simple for the user.
 
 # Reference Implementation
-1. On godbolt Clang reflection [https://godbolt.org/z/bheWMGj1P](https://godbolt.org/z/bheWMGj1P)
-1. On godbolt GCC 16.1 [https://godbolt.org/z/jK9rbM1v3](https://godbolt.org/z/jK9rbM1v3)
-1. Trying locally with GCC 16.1 [here](https://github.com/amfern/wg21-papers/tree/P4313)
-
-
-```cpp
+1. Godbolt using Barry's clang [https://godbolt.org/z/TbYsv4sPx](https://godbolt.org/z/TbYsv4sPx)
+<!-- TODO: $ operator has red syntax because it's not yet standart C++ operator  --> 
+```{.cpp em=none}
 #include <type_traits>
 #include <utility>
 #include <meta>
 
 namespace std {
-inline constexpr struct BitmaskType {} bitmask_type;
+    struct BitmaskType {
+        static consteval auto on_complete(std::meta::info ty) -> void {
+            if (!is_scoped_enum_type(ty)) {
+               // we support only for enum class type
+               return;
+            }
 
-template <typename T>
-concept BitmaskTypeLike =
-    std::is_enum_v<T> and (!std::meta::annotations_of_with_type(^^T,std::meta::type_of(^^bitmask_type)).empty());
+            std::meta::operators op_for_tenary =
+                is_same_type(std::meta::underlying_type(ty), ^^bool)
+                    ? std::meta::operators::op_exclamation
+                    : std::meta::operators::op_tilde;
 
+            queue_injection(^^{
+                constexpr $ty operator~($ty e) {
+                    return static_cast<$ty>($op_for_tenary std::to_underlying(e));
+                }
+            });
+
+            auto binary = [=](std::meta::operators op, std::meta::operators op_eq) {
+                queue_injection(^^{
+                    constexpr $ty operator $op($ty lhs, $ty rhs) {
+                        return static_cast<$ty>(std::to_underlying(lhs) $op std::to_underlying(rhs));
+                    }
+
+                    constexpr ${ty}& operator $op_eq(${ty}& lhs, $ty rhs) {
+                        lhs = lhs $op rhs;
+                        return lhs;
+                    }
+                });
+            };
+
+            using enum std::meta::operators;
+            binary(op_pipe,      op_pipe_equals);
+            binary(op_ampersand, op_ampersand_equals);
+            binary(op_caret,     op_caret_equals);
+        }
+    };
+
+    inline constexpr auto bitmask_type = BitmaskType();
 } // std
-
-template <std::BitmaskTypeLike T>
-constexpr T operator|(T lhs, T rhs) {
-  return static_cast<T>(std::to_underlying(lhs) | std::to_underlying(rhs));
-}
-
-template <std::BitmaskTypeLike T>
-constexpr T operator&(T lhs, T rhs) {
-  return static_cast<T>(std::to_underlying(lhs) & std::to_underlying(rhs));
-}
-
-template <std::BitmaskTypeLike T>
-constexpr T operator^(T lhs, T rhs) {
-  return static_cast<T>(std::to_underlying(lhs) ^ std::to_underlying(rhs));
-}
-
-template <std::BitmaskTypeLike T> constexpr T operator~(T lhs) {
-  if constexpr(std::same_as<bool,std::underlying_type_t<T>>) {
-    return static_cast<T>(!static_cast<bool>(lhs));
-  } else {
-    return static_cast<T>(~std::to_underlying(lhs));
-  }
-}
-
-template <std::BitmaskTypeLike T>
-constexpr T& operator|=(T &lhs, T rhs) {
-  lhs = lhs | rhs;
-  return lhs;
-}
-
-template <std::BitmaskTypeLike T>
-constexpr T& operator&=(T &lhs, T rhs) {
-  lhs = lhs & rhs;
-  return lhs;
-}
-
-template <std::BitmaskTypeLike T> constexpr T& operator^=(T &lhs, T rhs) {
-  lhs = lhs ^ rhs;
-  return lhs;
-}
-
 ```
 
 # Wording
@@ -379,47 +375,50 @@ With the content:
 
 ::: add
 > # 22.x.1 Header `<bitmask>` synopsis {-}
-> The header `<bitmask>` defines all function needed for [bitmask.types]{.sref}
+> The header `<bitmask>` defines token sequence injection, which define all bitmask operator function for [bitmask.types]{.sref}
 > ```cpp
 > namespace std {
-> // 22.x.2, annotation type
-> inline constexpr unspecified bitmask_type = unspecified;
+> // 22.x.2, bitmask struct for operator injection
+> struct BitmaskType { see below };   // exposition only
 >
-> // 22.x.3, concept
-> template <typename T>
-> 	concept bitmask-like = see below;         // exposition only
-> }
+> // 22.x.3, annotation type
+> inline constexpr BitmaskType bitmask_type = unspecified;
 >
-> // 22.x.4, goes into global namespace 
-> template <bitmask-like T> constexpr T operator|(T lhs, T rhs);
-> template <bitmask-like T> constexpr T operator&(T lhs, T rhs);
-> template <bitmask-like T> constexpr T operator^(T lhs, T rhs);
-> template <bitmask-like T> constexpr T operator~(T lhs);
-> template <bitmask-like T> constexpr T& operator|=(T &lhs, T rhs);
-> template <bitmask-like T> constexpr T& operator&=(T &lhs, T rhs);
-> template <bitmask-like T> constexpr T& operator^=(T &lhs, T rhs);
 > ```
 > 
-> # 22.x.2 Annotation `bitmask_type` {-}
+> # 22.x.2 Annotation `struct BitmaskType` {-}
+> [1]{.pnum} When a definition of a scoped enumeration type T with an annotation of type BitmaskType becomes complete, then for each operator @ in (|,^,&), definitions of that operator and the corresponding compound assignment operator are injected into the scoped enumeration definition as follows: 
+> ```cpp
+> constexpr T operator@ (T lhs,T rhs) noexcept {
+>   return static_cast<T>(to_underlying(lhs) @ to_underlying(rhs));
+> }
+> 
+> constexpr T& operator@= (T &lhs,T rhs) noexcept {
+>   lhs = lhs @ rhs; return lhs;
+> }
+> ```
+> [2]{.pnum} A definition of the complement operator is also injected into the scope of enumeration definition as follows:
+> For Boolean type:
+> ```cpp
+> constexpr T operator~ (T lhs) noexcept {
+>    return bool(lhs);
+> } 
+> ```
+> For every other type:
+> ```cpp
+> constexpr T operator~ (T lhs) noexcept {
+>    return static_cast<T>(~to_underlying(lhs));
+> } 
+> ```
+
+> # 22.x.3 Annotation `bitmask_type` {-}
 > ```cpp
 > namespace std {
-> 	inline constexpr unspecified bitmask_type;
+> 	inline constexpr BitmaskType bitmask_type;
 > }
 > ```
 > [1]{.pnum} bitmask_type is an instance of a unique unspecified type that is suitable for use as an annotation ([dcl.attr.annotation]{.sref}).
 >
-> # 22.x.3 Concept bitmask-like {-}
-> ```cpp
-> namespace std {
-> 	template <typename T>
-> 	concept bitmask-like =
-> 	    std::is_enum_v<T> and (!std::meta::annotations_of_with_type(^^T,std::meta::type_of(^^bitmask_type)).empty()); 
-> }
-> ```
-> ::: note
-> bitwise operators matching those required for Bitmask types [bitmask.types] are defined for types that conform to the bitmask-like concept.
-> :::
-> 
 > [1]{.pnum}
 > 
 > ::: example
@@ -431,30 +430,9 @@ With the content:
 > 	Execute = 1 << 2,
 > };
 > ```
-> The enum `Permission` conforms to the concept bitmask-like
+> The enum `Permission` will now have appropriate bitmask operators
 > :::
 >
-> # 22.x.4 bitmask operators {-}
-> [1]{.pnum} For each operator @ in (|, ^, &) there is a definition in the global namespace of the form:
-> ```cpp
-> template<bitmask-like T> constexpr T operator@ (T lhs,T rhs) noexcept {
->   return static_cast<T>(to_underlying(lhs) @ to_underlying(rhs));
-> }
-> ```
->
-> [2]{.pnum} And the corresponding compound assignment operators have definitions in the global namespace of the form:
-> ```cpp
-> template<bitmask-like T> constexpr T& operator@= (T &lhs,T rhs) noexcept {
->   lhs = lhs @ rhs; return lhs;
-> }
-> ```
-> 
-> [3]{.pnum} Additionally the complement operator is defined in the global namespace as:
-> ```cpp
-> template<bitmask-like T> constexpr T operator~ (T lhs) noexcept {
->   return static_cast<T>(~to_underlying(lhs));
-> }
-> ```
 :::
 
 :::

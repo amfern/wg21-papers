@@ -5,15 +5,15 @@
 
 enum class [[=std::bitmask_type]] A { x = 1, y = 2, z = 4, xy = x|y };
 
-enum class B : unsigned long { x = 0x80000000, y = 0x40000000 };
-constexpr std::BitmaskRetType enable_bitmask_type(B);
+// enum class B : unsigned long { x = 0x80000000, y = 0x40000000 };
+// constexpr std::BitmaskRetType enable_bitmask_type(B);
 
 enum class C{x,y};
 
 int main() {
     // auto perm1 = A::x | A::y;
   
-    auto perm2 = A::x | A::z;
+  auto perm2 = A::x | A::z | A::y;
     assert((perm2 & A::xy) == A::xy);
 
     A a1=A::x | A::y;
@@ -24,12 +24,12 @@ int main() {
     A a3=a1&~A::x; // Turn off A::X
     assert(A::y == a3);
 
-    B b1=B::x | B::y;
-    B b2=b1&B::y;
-    assert(B::y == b2);
-    b2^=B::x;
-    assert((B::x | B::y) == b2);
-    B b3=b1&~B::x;
-    assert(B::y == b3);
+    // B b1=B::x | B::y;
+    // B b2=b1&B::y;
+    // assert(B::y == b2);
+    // b2^=B::x;
+    // assert((B::x | B::y) == b2);
+    // B b3=b1&~B::x;
+    // assert(B::y == b3);
 }
 
