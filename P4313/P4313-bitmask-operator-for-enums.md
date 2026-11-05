@@ -314,8 +314,6 @@ This proposal builds on the example from [@P4380R1]{.title} by Barry Revzin usin
 
 # Reference Implementation
 1. Godbolt using Barry's clang [https://godbolt.org/z/TbYsv4sPx](https://godbolt.org/z/TbYsv4sPx)
-<!-- TODO: need to get Barry's compiler working 1. Trying locally with GCC 16.1 [here](https://github.com/amfern/wg21-papers/tree/P4313) -->
-
 <!-- TODO: $ operator has red syntax because it's not yet standart C++ operator  --> 
 ```{.cpp em=none}
 #include <type_traits>

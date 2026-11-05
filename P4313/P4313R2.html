@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="generator" content="mpark/wg21" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <meta name="dcterms.date" content="2026-11-03" />
+  <meta name="dcterms.date" content="2026-11-05" />
   <title>Bitmask operations for enums</title>
   <style>
 
@@ -1577,7 +1577,7 @@ enums</h1>
   </tr>
   <tr>
     <td>Date:</td>
-    <td>2026-11-03</td>
+    <td>2026-11-05</td>
   </tr>
   <tr>
     <td style="vertical-align:top">Project:</td>
@@ -1964,11 +1964,9 @@ is easy and simple for the user.</li>
 </ol>
 <h1 data-number="5" id="reference-implementation"><span class="header-section-number">5</span> Reference Implementation<a href="#reference-implementation" class="self-link"></a></h1>
 <ol type="1">
-<li>On godbolt Clang reflection <a href="https://godbolt.org/z/bheWMGj1P">https://godbolt.org/z/bheWMGj1P</a></li>
-<li>On godbolt GCC 16.1 <a href="https://godbolt.org/z/jK9rbM1v3">https://godbolt.org/z/jK9rbM1v3</a></li>
-<li>Trying locally with GCC 16.1 <a href="https://github.com/amfern/wg21-papers/tree/P4313">here</a></li>
+<li>Godbolt using Barry’s clang <a href="https://godbolt.org/z/TbYsv4sPx">https://godbolt.org/z/TbYsv4sPx</a>
+<!-- TODO: $ operator has red syntax because it's not yet standart C++ operator  --></li>
 </ol>
-<!-- TODO: $ operator has red syntax because it's not yet standart C++ operator  -->
 <div class="sourceCode" id="cb2"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;type_traits&gt;</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;utility&gt;</span></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;meta&gt;</span></span>
@@ -1981,42 +1979,39 @@ is easy and simple for the user.</li>
 <span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>               <span class="cf">return</span><span class="op">;</span></span>
 <span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>            <span class="op">}</span></span>
 <span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>            queue_injection<span class="op">(^^{</span></span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>                <span class="kw">constexpr</span> <span class="er">$</span>ty <span class="kw">operator</span><span class="op">~(</span><span class="er">$</span>ty e<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>                    <span class="cf">if</span> <span class="kw">constexpr</span><span class="op">(</span>std<span class="op">::</span>same_as<span class="op">&lt;</span><span class="dt">bool</span><span class="op">,</span>std<span class="op">::</span>underlying_type_t<span class="op">&lt;</span><span class="er">$</span>ty<span class="op">&gt;&gt;)</span> <span class="op">{</span></span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>                        <span class="cf">return</span> <span class="dt">bool</span><span class="op">(</span>e<span class="op">);</span></span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>                    <span class="op">}</span> <span class="cf">else</span> <span class="op">{</span></span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>                        <span class="cf">return</span> <span class="kw">static_cast</span><span class="op">&lt;</span><span class="er">$</span>ty<span class="op">&gt;(~</span>std<span class="op">::</span>to_underlying<span class="op">(</span>e<span class="op">));</span></span>
-<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>                    <span class="op">}</span></span>
-<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>                <span class="op">}</span></span>
-<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>            <span class="op">});</span></span>
-<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>            <span class="kw">auto</span> binary <span class="op">=</span> <span class="op">[=](</span>std<span class="op">::</span>meta<span class="op">::</span>operators op<span class="op">,</span> std<span class="op">::</span>meta<span class="op">::</span>operators op_eq<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>                queue_injection<span class="op">(^^{</span></span>
-<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>                    <span class="co">// </span><span class="al">TODO</span><span class="co">: the $ causing italic formatting</span></span>
-<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>                    <span class="co">// </span><span class="al">TODO</span><span class="co">: update godbolt examples</span></span>
-<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>                    <span class="co">// </span><span class="al">TODO</span><span class="co">: trailing return type make formatting pretieres, easier to deduce type from parameter instead of declaring std::declval ahead. Which eseetially saves on typing.</span></span>
-<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>                    <span class="co">// auto foo(T1 arg1,T2 arg2) -&gt; decltype(arg1+arg2);</span></span>
-<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>                    <span class="kw">constexpr</span> <span class="er">$</span>ty <span class="kw">operator</span> <span class="er">$</span>op<span class="op">(</span><span class="er">$</span>ty lhs<span class="op">,</span> <span class="er">$</span>ty rhs<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>                        <span class="cf">return</span> <span class="kw">static_cast</span><span class="op">&lt;</span><span class="er">$</span>ty<span class="op">&gt;(</span>std<span class="op">::</span>to_underlying<span class="op">(</span>lhs<span class="op">)</span> <span class="er">$</span>op std<span class="op">::</span>to_underlying<span class="op">(</span>rhs<span class="op">));</span></span>
-<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>                    <span class="op">}</span></span>
-<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a>                    <span class="kw">constexpr</span> <span class="er">$</span><span class="op">{</span>ty<span class="op">}&amp;</span> <span class="kw">operator</span> <span class="er">$</span>op_eq<span class="op">(</span><span class="er">$</span><span class="op">{</span>ty<span class="op">}&amp;</span> lhs<span class="op">,</span> <span class="er">$</span>ty rhs<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a>                        lhs <span class="op">=</span> lhs <span class="er">$</span>op rhs<span class="op">;</span></span>
-<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a>                        <span class="cf">return</span> lhs<span class="op">;</span></span>
-<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a>                    <span class="op">}</span></span>
-<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a>                <span class="op">});</span></span>
-<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a>            <span class="op">};</span></span>
-<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a>            <span class="kw">using</span> <span class="kw">enum</span> std<span class="op">::</span>meta<span class="op">::</span>operators<span class="op">;</span></span>
-<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a>            binary<span class="op">(</span>op_pipe<span class="op">,</span>      op_pipe_equals<span class="op">);</span></span>
-<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a>            binary<span class="op">(</span>op_ampersand<span class="op">,</span> op_ampersand_equals<span class="op">);</span></span>
-<span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a>            binary<span class="op">(</span>op_caret<span class="op">,</span>     op_caret_equals<span class="op">);</span></span>
-<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
-<span id="cb2-45"><a href="#cb2-45" aria-hidden="true" tabindex="-1"></a>    <span class="op">};</span></span>
-<span id="cb2-46"><a href="#cb2-46" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-47"><a href="#cb2-47" aria-hidden="true" tabindex="-1"></a>    <span class="kw">inline</span> <span class="kw">constexpr</span> <span class="kw">auto</span> bitmask_type <span class="op">=</span> BitmaskType<span class="op">();</span></span>
-<span id="cb2-48"><a href="#cb2-48" aria-hidden="true" tabindex="-1"></a><span class="op">}</span> <span class="co">// std</span></span></code></pre></div>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>            std<span class="op">::</span>meta<span class="op">::</span>operators op_for_tenary <span class="op">=</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>                is_same_type<span class="op">(</span>std<span class="op">::</span>meta<span class="op">::</span>underlying_type<span class="op">(</span>ty<span class="op">),</span> <span class="op">^^</span><span class="dt">bool</span><span class="op">)</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>                    <span class="op">?</span> std<span class="op">::</span>meta<span class="op">::</span>operators<span class="op">::</span>op_exclamation</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>                    <span class="op">:</span> std<span class="op">::</span>meta<span class="op">::</span>operators<span class="op">::</span>op_tilde<span class="op">;</span></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>            queue_injection<span class="op">(^^{</span></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>                <span class="kw">constexpr</span> <span class="er">$</span>ty <span class="kw">operator</span><span class="op">~(</span><span class="er">$</span>ty e<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>                    <span class="cf">return</span> <span class="kw">static_cast</span><span class="op">&lt;</span><span class="er">$</span>ty<span class="op">&gt;(</span><span class="er">$</span>op_for_tenary std<span class="op">::</span>to_underlying<span class="op">(</span>e<span class="op">));</span></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>                <span class="op">}</span></span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>            <span class="op">});</span></span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>            <span class="kw">auto</span> binary <span class="op">=</span> <span class="op">[=](</span>std<span class="op">::</span>meta<span class="op">::</span>operators op<span class="op">,</span> std<span class="op">::</span>meta<span class="op">::</span>operators op_eq<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>                queue_injection<span class="op">(^^{</span></span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>                    <span class="kw">constexpr</span> <span class="er">$</span>ty <span class="kw">operator</span> <span class="er">$</span>op<span class="op">(</span><span class="er">$</span>ty lhs<span class="op">,</span> <span class="er">$</span>ty rhs<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>                        <span class="cf">return</span> <span class="kw">static_cast</span><span class="op">&lt;</span><span class="er">$</span>ty<span class="op">&gt;(</span>std<span class="op">::</span>to_underlying<span class="op">(</span>lhs<span class="op">)</span> <span class="er">$</span>op std<span class="op">::</span>to_underlying<span class="op">(</span>rhs<span class="op">));</span></span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>                    <span class="op">}</span></span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>                    <span class="kw">constexpr</span> <span class="er">$</span><span class="op">{</span>ty<span class="op">}&amp;</span> <span class="kw">operator</span> <span class="er">$</span>op_eq<span class="op">(</span><span class="er">$</span><span class="op">{</span>ty<span class="op">}&amp;</span> lhs<span class="op">,</span> <span class="er">$</span>ty rhs<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>                        lhs <span class="op">=</span> lhs <span class="er">$</span>op rhs<span class="op">;</span></span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>                        <span class="cf">return</span> lhs<span class="op">;</span></span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a>                    <span class="op">}</span></span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a>                <span class="op">});</span></span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a>            <span class="op">};</span></span>
+<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a>            <span class="kw">using</span> <span class="kw">enum</span> std<span class="op">::</span>meta<span class="op">::</span>operators<span class="op">;</span></span>
+<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a>            binary<span class="op">(</span>op_pipe<span class="op">,</span>      op_pipe_equals<span class="op">);</span></span>
+<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a>            binary<span class="op">(</span>op_ampersand<span class="op">,</span> op_ampersand_equals<span class="op">);</span></span>
+<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a>            binary<span class="op">(</span>op_caret<span class="op">,</span>     op_caret_equals<span class="op">);</span></span>
+<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a>    <span class="op">};</span></span>
+<span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a>    <span class="kw">inline</span> <span class="kw">constexpr</span> <span class="kw">auto</span> bitmask_type <span class="op">=</span> BitmaskType<span class="op">();</span></span>
+<span id="cb2-45"><a href="#cb2-45" aria-hidden="true" tabindex="-1"></a><span class="op">}</span> <span class="co">// std</span></span></code></pre></div>
 <h1 data-number="6" id="wording"><span class="header-section-number">6</span> Wording<a href="#wording" class="self-link"></a></h1>
 <div class="wording">
 <h2 data-number="6.1" id="add-bitmask-header"><span class="header-section-number">6.1</span> Add
@@ -2060,31 +2055,33 @@ into the scoped enumeration definition as follows:</p>
 <span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
 <p><span class="marginalizedparent"><a href="#pnum-2" id="pnum-2" class="marginalized">2</a></span> A definition of the complement
 operator is also injected into the scope of enumeration definition as
-follows:</p>
+follows: For Boolean type:</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode default cpp"><code class="sourceCode default"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>constexpr T operator~ (T lhs) noexcept {</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  if constexpr(same_as&lt;bool,underlying_type_t&lt;T&gt;&gt;) {</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>      return bool(lhs);</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  } else {</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>      return static_cast&lt;T&gt;(~to_underlying(lhs));</span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>} </span></code></pre></div>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>   return bool(lhs);</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>} </span></code></pre></div>
+<p>For every other type:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode default cpp"><code class="sourceCode default"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>constexpr T operator~ (T lhs) noexcept {</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>   return static_cast&lt;T&gt;(~to_underlying(lhs));</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>} </span></code></pre></div>
+</blockquote>
+<blockquote>
 <h1 id="x.3-annotation-bitmask_type" class="unnumbered">22.x.3
 Annotation <code class="sourceCode default cpp">bitmask_type</code><a href="#x.3-annotation-bitmask_type" class="self-link"></a></h1>
-<div class="sourceCode" id="cb6"><pre class="sourceCode default cpp"><code class="sourceCode default"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>namespace std {</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  inline constexpr BitmaskType bitmask_type;</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode default cpp"><code class="sourceCode default"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>namespace std {</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  inline constexpr BitmaskType bitmask_type;</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
 <p><span class="marginalizedparent"><a href="#pnum-3" id="pnum-3" class="marginalized">1</a></span> bitmask_type is an instance of a
 unique unspecified type that is suitable for use as an annotation
 (<span>9.13.12 Annotations <a href="https://eel.is/c++draft/dcl.attr.annotation" title="9.13.12 Annotations">[dcl.attr.annotation]</a></span>).</p>
 <p><span class="marginalizedparent"><a href="#pnum-4" id="pnum-4" class="marginalized">1</a></span></p>
 <div id="example-1" class="example" data-num="1">
 <span>[ <em>Example <a href="#example-1">1</a>:</em> </span>
-<div class="sourceCode" id="cb7"><pre class="sourceCode default cpp"><code class="sourceCode default"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>enum class [[=std::bitmask_type]] Permission {</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  None    = 0,</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  read    = 1 &lt;&lt; 0,</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  Write   = 1 &lt;&lt; 1,</span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>  Execute = 1 &lt;&lt; 2,</span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>};</span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode default cpp"><code class="sourceCode default"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>enum class [[=std::bitmask_type]] Permission {</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  None    = 0,</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  read    = 1 &lt;&lt; 0,</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  Write   = 1 &lt;&lt; 1,</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  Execute = 1 &lt;&lt; 2,</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>};</span></code></pre></div>
 <p>The enum <code class="sourceCode default cpp">Permission</code> will
 now have appropriate bitmask operators<span> — <em>end example</em>
 ]</span></p>

@@ -1,6 +1,11 @@
 # enum class Bitmask
 
-## the tests
+## build the paper
+``` shell
+make P4313R2.html
+```
+
+## run the tests
 
 1. Compile barries fork of llvm with 
  ``` shell
