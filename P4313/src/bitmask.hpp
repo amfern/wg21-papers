@@ -17,14 +17,14 @@ namespace std {
             }
 
             // TODO(ask): maybe the sensible thing to do is not allow bool as underlying type?
-            std::meta::operators tenary_op_to_use =
+            std::meta::operators op_for_tenary =
                 is_same_type(std::meta::underlying_type(ty), ^^bool)
                     ? std::meta::operators::op_exclamation
                     : std::meta::operators::op_tilde;
 
             queue_injection(^^{
                 constexpr $ty operator~($ty e) {
-                    return static_cast<$ty>($tenary_op_to_use std::to_underlying(e));
+                    return static_cast<$ty>($op_for_tenary std::to_underlying(e));
                 }
             });
 
