@@ -1,70 +1,36 @@
 module(name = "bitmask")
 
-bazel_dep(name = "googletest", version = "1.17.0.bcr.2")
+bazel_dep(name = "googletest", version = "1.18.0.bcr.1")
 bazel_dep(name = "bazel_skylib", version = "1.9.0")
 bazel_dep(name = "bazel_lib", version = "3.3.1")
 bazel_dep(name = "platforms", version = "1.1.0")
 bazel_dep(name = "rules_cc", version = "0.2.19")
 bazel_dep(name = "rules_build_error", version = "0.11.0", dev_dependency = True)
 
-############################################################################
-# configure gcc toolchain
-############################################################################
-bazel_dep(name = "gcc_toolchain", version = "0.10.0")
-
-gcc_toolchains = use_extension("@gcc_toolchain//toolchain:module_extensions.bzl", "gcc_toolchains", dev_dependency = True)
-
-[
-    [
-        gcc_toolchains.toolchain(
-            name = "gcc_toolchain_{}".format(arch),
-            target_arch = arch,
-            extra_cxxflags = [
-                "-std=c++26",
-                "-freflection",
-            ],
-        ),
-        use_repo(gcc_toolchains, "gcc_toolchain_{}".format(arch)),
-        register_toolchains(
-            "@gcc_toolchain_{}//:cc_toolchain".format(arch),
-            "@gcc_toolchain_{}//:fortran_toolchain".format(arch),
-            dev_dependency = True,
-        ),
-    ]
-    for arch in [
-        "aarch64",
-        "armv7",
-        "x86_64",
-    ]
-]
-
 
 ############################################################################
-# configure llvm toolchain
+# configure barry's toolchain
 ############################################################################
-bazel_dep(name = "llvm", version = "0.8.6")
+bazel_dep(name = "toolchains_llvm", version = "1.13.0")
+llvm = use_extension("@toolchains_llvm//toolchain/extensions:llvm.bzl", "llvm")
 
-toolchain = use_extension("@llvm//extensions:toolchain.bzl", "toolchain")
+# MODULE.bazel
+llvm.toolchain(
+    name = "llvm_toolchain_barry",
+    use_builtin_llvm_distributions = False,
+    urls = {
+        "": ["file:///home/ilya/Documents/llvm-project/build/LLVM-23.0.0git-Linux.tar.gz"],
+    },
+    extra_llvm_distributions = {
+        "LLVM-23.0.0-Linux-X64.tar.gz": "e00b4ee3b557405c1bdfa1d6603716b4ef39a3f30fc219788a056a8242b49e94",
+    },
+    strip_prefix = {
+        "": "LLVM-23.0.0git-Linux",
+    },
+    llvm_versions = {"": "23.0.0"},
+    cxx_standard = {"": "c++26"},
+    cxx_flags = {"": ["-freflection"]},
+)
 
-llvm_source = use_extension("@llvm//extensions:llvm_source.bzl", "llvm_source")
-# llvm_source.version(llvm_version = "23.0.0")
-
-toolchain.exec(
-    arch = "x86_64",
-    os = "linux",
-)
-toolchain.exec(
-    arch = "aarch64",
-    os = "linux",
-)
-toolchain.target(
-    arch = "x86_64",
-    os = "linux",
-)
-toolchain.target(
-    arch = "aarch64",
-    os = "linux",
-)
-use_repo(toolchain, "llvm_toolchains")
-
-register_toolchains("@llvm_toolchains//:all")
+use_repo(llvm, "llvm_toolchain_barry")
+register_toolchains("@llvm_toolchain_barry//:all")

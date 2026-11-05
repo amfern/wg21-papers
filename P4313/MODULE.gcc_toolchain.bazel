@@ -1,0 +1,30 @@
+############################################################################
+# configure gcc toolchain
+############################################################################
+bazel_dep(name = "gcc_toolchain", version = "0.10.0")
+
+gcc_toolchains = use_extension("@gcc_toolchain//toolchain:module_extensions.bzl", "gcc_toolchains", dev_dependency = True)
+
+[
+    [
+        gcc_toolchains.toolchain(
+            name = "gcc_toolchain_{}".format(arch),
+            target_arch = arch,
+            extra_cxxflags = [
+                "-std=c++26",
+                "-freflection",
+            ],
+        ),
+        use_repo(gcc_toolchains, "gcc_toolchain_{}".format(arch)),
+        register_toolchains(
+            "@gcc_toolchain_{}//:cc_toolchain".format(arch),
+            "@gcc_toolchain_{}//:fortran_toolchain".format(arch),
+            dev_dependency = True,
+        ),
+    ]
+    for arch in [
+        "aarch64",
+        "armv7",
+        "x86_64",
+    ]
+]

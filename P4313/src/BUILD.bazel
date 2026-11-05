@@ -11,6 +11,16 @@ cc_library(
     visibility = ["//visibility:public"],
 )
 
+# bitmask using concepts
+cc_library(
+    name = "bitmask_r1",
+    hdrs = [
+        "bitmask_r1.hpp",
+    ],
+    linkopts = ["-lstdc++"],
+    visibility = ["//visibility:public"],
+)
+
 cc_library(
     name = "bitmask_wrapper",
     hdrs = [

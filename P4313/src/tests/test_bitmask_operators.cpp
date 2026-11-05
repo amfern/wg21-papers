@@ -52,7 +52,7 @@ TEST(BitmaskOperators, static_assert) {
 }
 
 // Test edge case with bool and integral promotion https://dryperspective.github.io/posts/complement-of-true/
-enum class [[=std::bitmask_type]] boolean : bool{
+enum class [[=std::bitmask_type]] boolean : bool {
     FALSE,
     TRUE,
 };
@@ -63,14 +63,12 @@ TEST(BitmaskOperators, test_bool_integral_promotion) {
 }
 
 namespace N {
-  enum class[[= std::bitmask_type]] Permission {
+  enum class[[=std::bitmask_type]] Permission {
     None = 0,
     Read = 1 << 0,
     Write = 1 << 1,
     Execute = 1 << 2,
   };
-
-  using ::operator|, ::operator&, ::operator^, ::operator~, ::operator|=, ::operator&=, ::operator^=;
 }
 
 namespace M {
