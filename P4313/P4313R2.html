@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="generator" content="mpark/wg21" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <meta name="dcterms.date" content="2026-11-05" />
+  <meta name="dcterms.date" content="2026-11-10" />
   <title>Bitmask operations for enums</title>
   <style>
 
@@ -1577,7 +1577,7 @@ enums</h1>
   </tr>
   <tr>
     <td>Date:</td>
-    <td>2026-11-05</td>
+    <td>2026-11-10</td>
   </tr>
   <tr>
     <td style="vertical-align:top">Project:</td>
@@ -1643,8 +1643,9 @@ same type safety</a></li>
 <li><a href="#design-consideration" id="toc-design-consideration"><span class="toc-section-number">4.1</span> Design consideration</a></li>
 </ul></li>
 <li><a href="#reference-implementation" id="toc-reference-implementation"><span class="toc-section-number">5</span> Reference Implementation</a></li>
-<li><a href="#wording" id="toc-wording"><span class="toc-section-number">6</span> Wording</a></li>
-<li><a href="#bibliography" id="toc-bibliography"><span class="toc-section-number">7</span> References</a></li>
+<li><a href="#open-questions" id="toc-open-questions"><span class="toc-section-number">6</span> Open questions</a></li>
+<li><a href="#wording" id="toc-wording"><span class="toc-section-number">7</span> Wording</a></li>
+<li><a href="#bibliography" id="toc-bibliography"><span class="toc-section-number">8</span> References</a></li>
 </ul>
 </nav>
 <details class="collapsed">
@@ -2012,15 +2013,19 @@ is easy and simple for the user.</li>
 <span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a>    <span class="kw">inline</span> <span class="kw">constexpr</span> <span class="kw">auto</span> bitmask_type <span class="op">=</span> BitmaskType<span class="op">();</span></span>
 <span id="cb2-45"><a href="#cb2-45" aria-hidden="true" tabindex="-1"></a><span class="op">}</span> <span class="co">// std</span></span></code></pre></div>
-<h1 data-number="6" id="wording"><span class="header-section-number">6</span> Wording<a href="#wording" class="self-link"></a></h1>
+<h1 data-number="6" id="open-questions"><span class="header-section-number">6</span> Open questions<a href="#open-questions" class="self-link"></a></h1>
+<ol type="1">
+<li>Should we allow Bool as underlying type?</li>
+</ol>
+<h1 data-number="7" id="wording"><span class="header-section-number">7</span> Wording<a href="#wording" class="self-link"></a></h1>
 <div class="wording">
-<h2 data-number="6.1" id="add-bitmask-header"><span class="header-section-number">6.1</span> Add
+<h2 data-number="7.1" id="add-bitmask-header"><span class="header-section-number">7.1</span> Add
 <code class="sourceCode cpp"><span class="op">&lt;</span>bitmask<span class="op">&gt;</span></code>
 header<a href="#add-bitmask-header" class="self-link"></a></h2>
 <p>Add new header
 <code class="sourceCode cpp"><span class="op">&lt;</span>bitmask<span class="op">&gt;</span></code>
 to table Table 24: C++ library <span>16.4.2.3 Headers <a href="https://eel.is/c++draft/headers" title="16.4.2.3 Headers">[headers]</a></span></p>
-<h2 data-number="6.2" id="add-a-new-sections-to-chapter-utilities-after-bitset"><span class="header-section-number">6.2</span> Add a new sections to chapter
+<h2 data-number="7.2" id="add-a-new-sections-to-chapter-utilities-after-bitset"><span class="header-section-number">7.2</span> Add a new sections to chapter
 <span>22 General utilities library <a href="https://eel.is/c++draft/utilities" title="22 General utilities library">[utilities]</a></span> after
 <span>22.9 Bitsets <a href="https://eel.is/c++draft/bitset" title="22.9 Bitsets">[bitset]</a></span><a href="#add-a-new-sections-to-chapter-utilities-after-bitset" class="self-link"></a></h2>
 <p>With the content:</p>
@@ -2089,7 +2094,7 @@ now have appropriate bitmask operators<span> — <em>end example</em>
 </blockquote>
 </div>
 </div>
-<h1 data-number="7" id="bibliography"><span class="header-section-number">7</span> References<a href="#bibliography" class="self-link"></a></h1>
+<h1 data-number="8" id="bibliography"><span class="header-section-number">8</span> References<a href="#bibliography" class="self-link"></a></h1>
 <div id="refs" class="references csl-bib-body" data-entry-spacing="0" role="list">
 <div id="ref-P4380R1" class="csl-entry" role="listitem">
 [P4380R1] Barry Revzin, Daveed Vandevoorde, Andrei Alexandrescu.

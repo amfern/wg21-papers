@@ -363,8 +363,8 @@ namespace std {
 } // std
 ```
 
-## Open questions
-- Should we allow Bool as underlying type? as raised https://dryperspective.github.io/posts/complement-of-true/
+# Open questions
+1. Should we allow Bool as underlying type?
 
 # Wording
 ::: wording
