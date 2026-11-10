@@ -1,91 +1,52 @@
 #pragma once
 
-// (C) Copyright 2015 Just Software Solutions Ltd
-//
-// Distributed under the Boost Software License, Version 1.0.
-//
-// Boost Software License - Version 1.0 - August 17th, 2003
-//
-// Permission is hereby granted, free of charge, to any person or
-// organization obtaining a copy of the software and accompanying
-// documentation covered by this license (the "Software") to use,
-// reproduce, display, distribute, execute, and transmit the
-// Software, and to prepare derivative works of the Software, and
-// to permit third-parties to whom the Software is furnished to
-// do so, all subject to the following:
-//
-// The copyright notices in the Software and this entire
-// statement, including the above license grant, this restriction
-// and the following disclaimer, must be included in all copies
-// of the Software, in whole or in part, and all derivative works
-// of the Software, unless such copies or derivative works are
-// solely in the form of machine-executable object code generated
-// by a source language processor.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY
-// KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-// WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
-// PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO EVENT SHALL THE
-// COPYRIGHT HOLDERS OR ANYONE DISTRIBUTING THE SOFTWARE BE
-// LIABLE FOR ANY DAMAGES OR OTHER LIABILITY, WHETHER IN
-// CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
-// CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
-
 #include <type_traits>
 #include <utility>
 #include <meta>
 
 namespace std {
+    // TODO(ask): if the lookup is an issue, it possiblie to do some compiler change, and add a new type of enums that have bitmask operators? eg `bitmask class {}`
+    // TODO(ask): can we inherite enum eg class enum A : enum B? why not , i thik it should be available also in C++ for extending enums.
+    // TODO: validate that the enum flags values are not colliding and can be used as flags
+    struct BitmaskType {
+        static consteval auto on_complete(std::meta::info ty) -> void {
+            if (!is_scoped_enum_type(ty)) {
+               // TODO: maybe i should add an error message here, and test the error message
+               // we support only for enum class type
+               return;
+            }
 
-inline constexpr struct BitmaskType {} bitmask_type;
-inline constexpr struct BitmaskRetType {} bitmask_ret_type;
+            // TODO(ask): maybe the sensible thing to do is not allow bool as underlying type?
+            std::meta::operators op_for_tenary =
+                is_same_type(std::meta::underlying_type(ty), ^^bool)
+                    ? std::meta::operators::op_exclamation
+                    : std::meta::operators::op_tilde;
 
-template <typename T>
-concept BitmaskTypeLike =
-    std::is_enum_v<T> and (!meta::annotations_of_with_type(^^T,meta::type_of(^^bitmask_type)).empty() or
-                           requires(T e) { { enable_bitmask_type(e) } -> std::same_as<BitmaskRetType>; });
+            queue_injection(^^{
+                constexpr $ty operator~($ty e) {
+                    return static_cast<$ty>($op_for_tenary std::to_underlying(e));
+                }
+            });
 
+            auto binary = [=](std::meta::operators op, std::meta::operators op_eq) {
+                queue_injection(^^{
+                    constexpr $ty operator $op($ty lhs, $ty rhs) {
+                        return static_cast<$ty>(std::to_underlying(lhs) $op std::to_underlying(rhs));
+                    }
+
+                    constexpr ${ty}& operator $op_eq(${ty}& lhs, $ty rhs) {
+                        lhs = lhs $op rhs;
+                        return lhs;
+                    }
+                });
+            };
+
+            using enum std::meta::operators;
+            binary(op_pipe,      op_pipe_equals);
+            binary(op_ampersand, op_ampersand_equals);
+            binary(op_caret,     op_caret_equals);
+        }
+    };
+
+    inline constexpr auto bitmask_type = BitmaskType();
 } // std
-
-template <std::BitmaskTypeLike T>
-constexpr auto operator|(T lhs, T rhs) {
-  return static_cast<T>(std::to_underlying(lhs) | std::to_underlying(rhs));
-}
-
-template <std::BitmaskTypeLike T>
-constexpr auto operator&(T lhs, T rhs) {
-  return static_cast<T>(std::to_underlying(lhs) & std::to_underlying(rhs));
-}
-
-template <std::BitmaskTypeLike T>
-constexpr auto operator^(T lhs, T rhs) {
-  return static_cast<T>(std::to_underlying(lhs) ^ std::to_underlying(rhs));
-}
-
-template <std::BitmaskTypeLike T> constexpr auto operator~(T lhs) {
-  // we treat boolean specially because of integral promotion rules https://sub.fail/posts/complement-of-true/
-  if constexpr(std::same_as<bool,std::underlying_type_t<T>>) {
-    return static_cast<T>(!static_cast<bool>(lhs));
-  } else {
-    return static_cast<T>(~std::to_underlying(lhs));
-  }
-}
-
-template <std::BitmaskTypeLike T>
-constexpr T operator|=(T &lhs, T rhs) {
-  lhs = lhs | rhs;
-  return lhs;
-}
-
-template <std::BitmaskTypeLike T>
-constexpr T operator&=(T &lhs, T rhs) {
-  lhs = lhs & rhs;
-  return lhs;
-}
-
-template <std::BitmaskTypeLike T>
-constexpr T operator^=(T &lhs, T rhs) {
-  lhs = lhs ^ rhs;
-  return lhs;
-}

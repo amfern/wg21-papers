@@ -1,23 +1,26 @@
 # enum class Bitmask
 
-gcc already supports reflections:
-
+## build the paper
 ``` shell
-bazel test --config gcc //src/...
-bazel run --config gcc //src:example
+make P4313R2.html
 ```
 
-Compile with llvm once reflection are supported
-``` shell
-bazel test --config llvm //src/...
-bazel run --config llvm //src:example
+## run the tests
+
+1. Compile barries fork of llvm with 
+ ``` shell
+git clone git@github.com:brevzin/llvm-project.git -b compiler-explorer/barry
+
+cmake -G Ninja -S llvm -B build \
+  -DLLVM_ENABLE_PROJECTS="clang;lld;clang-tools-extra;" \
+  -DLLVM_ENABLE_RUNTIMES="compiler-rt;libcxx;libcxxabi;libunwind" \
+  -C clang/cmake/caches/Release.cmake
+
+ninja -v -C build package
 ```
 
-Compile with llvm from https://github.com/bloomberg/clang-p2996
-
+2. Run the tests using Barry's llvm fork
 ``` shell
-docker build -t clang-p2996-bazel -f docker/Dockerfile docker
-docker run -ti --rm -v (pwd):/work -w /work clang-p2996-bazel
-$ bazel test //src/...
-$ bazel run //src:bitmask_operators_example
+bazel test //src/...
+bazel run //src:example
 ```
